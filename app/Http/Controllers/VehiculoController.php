@@ -73,6 +73,7 @@ class VehiculoController extends Controller
         $vehiculo = Vehiculo::findOrFail($id);
         $vehiculo->load('categoria');
         $vehiculo->load('marca');
+        $vehiculo->load('almacen');
         return view('vehiculo.vehiculo.show',['vehiculo'=>$vehiculo]);
     }
 
