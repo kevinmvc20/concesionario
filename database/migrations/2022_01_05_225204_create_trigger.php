@@ -21,7 +21,7 @@ class CreateTrigger extends Migration
             return new;
         End
         $$
-        Language plpsql;
+        
 
         create trigger cantidad_compras after insert on orden_compras
         for each row 
