@@ -86,7 +86,6 @@
                 <div class="form-group">
                     <label for="almacen_id">Almacen:</label>
                             <select name="almacen_id" id="almacen_id"  class="form-control selectpicker" data-live-search="true" data-size="3" data-dropup-auto="false">
-                                <option value="0">Seleccione:</option>
                                 @foreach ($almacenes as $almacen)
                                     <option value="{{$almacen->id}}">{{$almacen->tipo_almacen->tipo}}</option>
                                 @endforeach
