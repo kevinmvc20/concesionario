@@ -29,6 +29,6 @@ class CreateTrigger extends Migration
      */
     public function down()
     {
-        DB::unprepared('DROP TRIGGER cantidad_compras');
+        DB::unprepared('DROP TRIGGER "cantidad_compras"');
     }
 }
