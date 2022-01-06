@@ -63,7 +63,7 @@
                 </div>
             </div> 
               
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            {{-- <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <div class="form-group">
                     <label for="roles">Agregar Rol:</label>
                             <select name="roles" id="roles"  class="form-control selectpicker" data-live-search="true" data-size="3" data-dropup-auto="false">
@@ -76,7 +76,7 @@
                         <span class="text-red"> {{ $message }} </span>
                     @enderror
                 </div>
-            </div>    
+            </div>     --}}
             
             <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <div class="form-group">

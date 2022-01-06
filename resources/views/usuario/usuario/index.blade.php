@@ -26,7 +26,9 @@
                             <td>{{ $usuario->persona->nombre }}</td>
                             <td>{{ $usuario->email }}</td>
                             <td>{{ $usuario->persona->telefono }}</td>
+                            @if( $usuario->getRoleNames() != null)
                             <td> {{ $usuario->getRoleNames() }} </td>
+                            @endif
                             <td>
                                {{--  <a href="{{ route('marcas.edit',['id' => $marca->id]) }}"><button class="btn btn-primary">Editar</button></a> --}}
                                

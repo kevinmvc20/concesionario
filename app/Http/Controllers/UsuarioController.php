@@ -65,8 +65,7 @@ class UsuarioController extends Controller
         
         $usuario->save();
 
-        $roles = $request->input('roles');
-        $usuario->syncRoles($roles);
+        
 
         
 
