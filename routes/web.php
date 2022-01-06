@@ -153,6 +153,17 @@ Route::get('/cliente/{id}/show','App\Http\Controllers\ClienteController@show')->
 
 
 
+//Roles y permisos
+Route::get('/roles','App\Http\Controllers\RoleController@index')->name('roles.index');
+Route::get('/roles/asignar','App\Http\Controllers\RoleController@asignar')->name('roles.asignar');
+Route::put('/roles/{id}/asignar','App\Http\Controllers\RoleController@storeRolPermiso')->name('roles.storeRolPermiso');
+Route::get('/roles/asignarRol','App\Http\Controllers\RoleController@asignarRol')->name('roles.asignarRol');
+Route::put('/roles/guardarRol','App\Http\Controllers\RoleController@guardarRol')->name('roles.guardarRol');
+Route::get('/roles/crearRol','App\Http\Controllers\RoleController@crearRol')->name('roles.crear');
+Route::post('/roles/guardar','App\Http\Controllers\RoleController@guardarNuevoRol')->name('roles.guardarNuevoRol');
+
+
+
 //Auth::routes();
 
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
