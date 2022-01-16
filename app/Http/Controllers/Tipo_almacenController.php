@@ -87,7 +87,7 @@ class Tipo_almacenController extends Controller
     {
         $tipoAlmacen = Tipo_almacen::findOrFail($id);
         $tipoAlmacen->delete();
-        $id_user= Auth::user();
+        $id_user= auth()->user();
         DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Tipo de Almacen','eliminar',$id,'2022-01-16','13:06:22',$id_user]);
         return redirect()->route('tipoalmacenes.index');
     }
