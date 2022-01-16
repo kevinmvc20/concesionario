@@ -9,6 +9,7 @@ class Persona extends Model
 {
     protected $table= 'personas';
     protected $fillable=['ci','nombre','email','direccion','telefono'];
+    public $timestamps = false;
 
 
     public function cliente(){

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\PersonaRequest;
 use App\Models\Cliente;
 use App\Models\Persona;
+
 
 class ClienteController extends Controller
 {
@@ -27,7 +29,7 @@ class ClienteController extends Controller
     {
         return view('venta.cliente.create');
     }
-    public function store(Request $request)
+    public function store(PersonaRequest $request)
     {
         $persona = new Persona();
         $persona->ci = $request->input('ci');
@@ -56,7 +58,7 @@ class ClienteController extends Controller
         $cliente->load('persona');
         return view('venta.cliente.show',['cliente' => $cliente]);
     }
-    public function update(Request $request, $id)
+    public function update(PersonaRequest $request, $id)
     {
         $persona = Persona::findOrFail($id);
         $persona->ci = $request->input('ci');
@@ -75,7 +77,9 @@ class ClienteController extends Controller
     public function destroy($id)
     {
         $cliente = Cliente::findOrFail($id);
+        $persona = Persona::findOrFail($cliente->id_persona);
         $cliente->delete();
+        $persona->delete();
         return redirect()->route('clientes.index');
     }
 }
