@@ -65,6 +65,13 @@ class CreateTrigger extends Migration
         // ');
 
 
+        DB::unprepared('
+        CREATE PROCEDURE nueva_bitacora(apartado varchar(255), accion varchar(255), implicado varchar(255), fecha date, hora time, id_user bigint(20))
+        BEGIN
+            insert into bitacoras(Apartado, accion, implicado,fecha,hora,id_user) values(apartado,accion, implicado, fecha, hora, id_user);
+        END
+        ');
+
     }
 
     /**
