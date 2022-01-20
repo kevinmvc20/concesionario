@@ -39,7 +39,7 @@ class RoleController extends Controller
         foreach($permisos as $permiso){
             $perm = Permission::find($permiso);
             $perm->assignRole($rol);
-            DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['rol: '.$rol->name,'asignar',$permiso->name,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
+            DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['rol: '.$rol->name,'asignar',$perm->name,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         }
         return redirect()->route('roles.index');
     }
