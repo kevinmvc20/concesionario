@@ -39,7 +39,7 @@ class RoleController extends Controller
         foreach($permisos as $permiso){
             $perm = Permission::find($permiso);
             $perm->assignRole($rol);
-            DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['rol: '.$rol,'asignar',$permiso,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
+            DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['rol: '.$rol->name,'asignar',$permiso,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         }
         return redirect()->route('roles.index');
     }
@@ -55,7 +55,7 @@ class RoleController extends Controller
         foreach ($roles as $rol) {
             $rolAsignado = Role::findOrFail($rol);
             $usuario->assignRole($rolAsignado);
-            DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['rol: '.$rolAsignado,'asignar',$usuario->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
+            DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['rol: '.$rolAsignado->name,'asignar',$usuario->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         }
         return redirect()->route('roles.index');
     }
