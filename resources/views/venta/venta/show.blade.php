@@ -55,7 +55,7 @@
         </div>
         <div class="col-lg-6 col-xl-12 col-md-6" style="margin-top: 20px">
             <div class="form-group">             
-                <a href="{{ route('compras.index') }}" class="btn btn-primary">Atras</a>
+                <a href="{{ route('ventas.index') }}" class="btn btn-primary">Atras</a>
             </div>
         </div>
     </div>

@@ -13,7 +13,7 @@
             <div class="form-group">
                 <label for="proveedor_id">Proveedor:</label>
                 <select name="proveedor_id" id="proveedor_id" class="form-control selectpicker" data-live-search="true" data-size="3" data-dropup-auto="false">
-                    <option value="0">Seleccione:</option>
+                    <option value="1">Seleccione:</option>
                     @foreach ($proveedores as $proveedor)
                         <option value="{{$proveedor->id}}">{{$proveedor->nombre}}</option>
                     @endforeach
