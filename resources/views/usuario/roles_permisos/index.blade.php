@@ -49,7 +49,6 @@
                     <thead>
                         <th>Id</th>
                         <th>Nombre</th>
-                        <th>Acciones</th>
                       
                     </thead>
                     @foreach ($permisos as $permiso)
