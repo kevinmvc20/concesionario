@@ -14,7 +14,7 @@
                 <table class="table table-bordered table-condensed table-hover">
                     <thead>
                         <th>Id</th>
-                        <th>Cantidad</th>
+                        <th>Cantidad de Cuotas pendientes</th>
                         <th>Monto</th>
                         <th>Fecha</th>
                         <th>Credito Id</th>
