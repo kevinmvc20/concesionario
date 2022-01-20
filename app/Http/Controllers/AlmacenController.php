@@ -3,16 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\AlmacenRequest;
 use App\Models\Almacen;
 use App\Models\Tipo_almacen;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AlmacenController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(){
+        $this->middleware('can:almacenes.index')->only('index');
+        $this->middleware('can:almacenes.create')->only('create');
+        $this->middleware('can:almacenes.store')->only('store');
+        $this->middleware('can:almacenes.destroy')->only('destroy');
+    }
+
     public function index(Request $request)
     {       
         $almacenes = Almacen::all();
@@ -37,12 +42,16 @@ class AlmacenController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AlmacenRequest $request)
     {
         $almacen = new Almacen;
         $almacen->stock = '0';
         $almacen->tipo_almacen_id = $request->input('tipo_almacen_id');
         $almacen->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Almacen','crear',$almacen->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('almacenes.index');
     }
 
@@ -90,6 +99,10 @@ class AlmacenController extends Controller
     {
         $almacen = Almacen::findOrFail($id);
         $almacen->delete();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Almacen','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('almacenes.index');
     }
 }

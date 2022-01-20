@@ -163,6 +163,27 @@ Route::get('/roles/crearRol','App\Http\Controllers\RoleController@crearRol')->na
 Route::post('/roles/guardar','App\Http\Controllers\RoleController@guardarNuevoRol')->name('roles.guardarNuevoRol');
 
 
+//bitacora
+Route::get('/bitacoras','App\Http\Controllers\BitacoraController@index')->name('bitacoras.index');
+Route::get('/downloadPDF','App\Http\Controllers\BitacoraController@downloadPDF')->name('bitacoras.pdf');
+
+
+//cuota
+Route::get('/cuota','App\Http\Controllers\CuotaController@index')->name('cuotas.index');
+Route::get('/cuota/create','App\Http\Controllers\CuotaController@create')->name('cuotas.create');
+Route::get('/cuota/{id}/destroy','App\Http\Controllers\CuotaController@destroy')->name('cuotas.destroy');
+Route::post('/cuota/store','App\Http\Controllers\CuotaController@store')->name('cuotas.store');
+//Route::get('/cuota/{id}/edit','App\Http\Controllers\CuotaController@edit')->name('cuotas.edit');
+Route::get('/cuota/{id}/show','App\Http\Controllers\CuotaController@show')->name('cuotas.show');
+
+
+//movimientos almacen
+Route::get('/movimientoAlmacen','App\Http\Controllers\MovimientoAlmacenController@index')->name('movimientoAlmacen.index');
+Route::get('/movimientoAlmacen/create','App\Http\Controllers\MovimientoAlmacenController@create')->name('movimientoAlmacen.create');
+Route::post('/movimientoAlmacen/store','App\Http\Controllers\MovimientoAlmacenController@store')->name('movimientoAlmacen.store');
+Route::get('/movimientoAlmacen/{id}/show','App\Http\Controllers\MovimientoAlmacenController@show')->name('movimientoAlmacen.show');
+Route::get('/movimientoAlmacen/{id}/conf','App\Http\Controllers\MovimientoAlmacenController@confirmar')->name('movimientoAlmacen.confirmar');
+
 
 //Auth::routes();
 

@@ -6,10 +6,22 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PersonaRequest;
 use App\Models\Cliente;
 use App\Models\Persona;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 
 class ClienteController extends Controller
 {
+    public function __construct(){
+        $this->middleware('can:clientes.index')->only('index');
+        $this->middleware('can:clientes.create')->only('create');
+        $this->middleware('can:clientes.store')->only('store');
+        $this->middleware('can:clientes.edit')->only('edit');
+        $this->middleware('can:clientes.destroy')->only('destroy');
+        $this->middleware('can:clientes.update')->only('update');
+        $this->middleware('can:clientes.show')->only('show');
+    }
+
     public static $tipo_cliente = 2;
 
     public function index(Request $request)
@@ -43,6 +55,10 @@ class ClienteController extends Controller
         $cliente = new Cliente();
         $cliente->id_persona = $persona->id;
         $cliente->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Cliente','crear',$cliente->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('clientes.index');
     }
    
@@ -72,6 +88,10 @@ class ClienteController extends Controller
         $client = $persona->cliente;
         $client->id_persona = $persona->id;
         $client->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Cliente','modificar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('clientes.index');
     }
     public function destroy($id)
@@ -80,6 +100,10 @@ class ClienteController extends Controller
         $persona = Persona::findOrFail($cliente->id_persona);
         $cliente->delete();
         $persona->delete();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Cliente','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('clientes.index');
     }
 }

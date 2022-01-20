@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\ProveedorRequest;
 use App\Models\Proveedor;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProveedorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(){
+        $this->middleware('can:proveedores.index')->only('index');
+        $this->middleware('can:proveedores.create')->only('create');
+        $this->middleware('can:proveedores.store')->only('store');
+        $this->middleware('can:proveedores.edit')->only('edit');
+        $this->middleware('can:proveedores.destroy')->only('destroy');
+        $this->middleware('can:proveedores.update')->only('update');
+    }
+
     public function index(Request $request)
     {
         if ($request) {
@@ -41,7 +48,7 @@ class ProveedorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProveedorRequest $request)
     {
         $proveedor = new Proveedor;
         $proveedor->nombre = $request->input('nombre');
@@ -49,6 +56,10 @@ class ProveedorController extends Controller
         $proveedor->telefono = $request->input('telefono');
         $proveedor->email = $request->input('email');
         $proveedor->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Proveedor','crear',$proveedor->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('proveedores.index');
     }
 
@@ -82,7 +93,7 @@ class ProveedorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProveedorRequest $request, $id)
     {
         $proveedor = Proveedor::findOrFail($id);
         $proveedor->nombre = $request->input('nombre');
@@ -90,6 +101,10 @@ class ProveedorController extends Controller
         $proveedor->telefono = $request->input('telefono');
         $proveedor->email = $request->input('email');
         $proveedor->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Proveedor','modificar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('proveedores.index');
     }
 
@@ -103,6 +118,10 @@ class ProveedorController extends Controller
     {
         $proveedor = Proveedor::findOrFail($id);
         $proveedor->delete();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Proveedor','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('proveedores.index');
     }
 }

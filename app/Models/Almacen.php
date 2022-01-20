@@ -19,4 +19,8 @@ class Almacen extends Model
         return $this->hasMany(Almacen::class, 'almacen_id');
     }
 
+    public function detalle_movimiento(){
+        $this->belongsTo('App\Models\DetalleMovimientos');
+    }
+
 }

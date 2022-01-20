@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\VentaRequest;
 use App\Models\Venta;
 use App\Models\Nota_venta;
 use App\Models\Cliente;
@@ -10,14 +11,19 @@ use App\Models\Empleado;
 use App\Models\Empleado_cliente;
 use App\Models\Vehiculo;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class VentaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
+    public function __construct(){
+        $this->middleware('can:ventas.index')->only('index');
+        $this->middleware('can:ventas.create')->only('create');
+        $this->middleware('can:ventas.store')->only('store');
+        $this->middleware('can:ventas.destroy')->only('destroy');
+        $this->middleware('can:ventas.show')->only('show');
+    }
+
     public function index(Request $request)
     {
         if($request){
@@ -53,7 +59,7 @@ class VentaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(VentaRequest $request)
     {
         $mytime= Carbon::now('America/La_Paz');
         $venta = new Venta();
@@ -90,6 +96,9 @@ class VentaController extends Controller
             $nota_venta->save();
             $cont=$cont+1;
         }
+
+       
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Venta','crear',$venta->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('ventas.index');
     }
 
@@ -143,6 +152,10 @@ class VentaController extends Controller
     {
         $ventas = Venta::findOrFail($id);
         $ventas->delete();
+
+        
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Venta','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('ventas.index');
     }
 }

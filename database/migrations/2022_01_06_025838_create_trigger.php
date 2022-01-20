@@ -56,6 +56,13 @@ class CreateTrigger extends Migration
             END
         ');
 
+        //DB::unprepared('
+        //CREATE TRIGGER almacen_salida AFTER INSERT ON nota_ventas FOR EACH ROW
+        //    BEGIN
+        //        UPDATE almacens SET almacens.stock=almacens.stock-1 WHERE NEW.vehiculo_id = vehiculos.id and almacens.id=vehiculos.almacen_id;
+        //    END
+        //');
+
         // DB::unprepared('
         // CREATE TRIGGER descripcion_contrato AFTER INSERT ON contratos FOR EACH ROW
         //     BEGIN
@@ -66,9 +73,9 @@ class CreateTrigger extends Migration
 
 
         DB::unprepared('
-        CREATE PROCEDURE nueva_bitacora(apartado varchar(255), accion varchar(255), implicado varchar(255), fecha date, hora time, id_user bigint(20))
+        CREATE PROCEDURE nueva_bitacora(apartado varchar(255), accion varchar(255), implicado varchar(255), fecha datetime, id_user bigint(20), nombre_usuario varchar(255))
         BEGIN
-            insert into bitacoras(Apartado, accion, implicado,fecha,hora,id_user) values(apartado,accion, implicado, fecha, hora, id_user);
+            insert into bitacoras(Apartado, accion, implicado,fecha,id_user,nombre_usuario) values(apartado,accion, implicado, fecha, id_user, nombre_usuario);
         END
         ');
 
@@ -87,6 +94,8 @@ class CreateTrigger extends Migration
         DB::unprepared('DROP TRIGGER "vehiculo_vendido"');
         DB::unprepared('DROP TRIGGER "cantidad_ventas"');
         DB::unprepared('DROP TRIGGER "aumentar_stock"');
+        //DB::unprepared('DROP TRIGGER "almacen_salida"');
         //DB::unprepared('DROP TRIGGER "descripcion_contrato"');
+        DB::unprepared('DROP PROCEDURE nueva_bitacora');
     }
 }

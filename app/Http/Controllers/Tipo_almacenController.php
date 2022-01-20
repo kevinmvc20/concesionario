@@ -4,15 +4,20 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Http\Request;
+use App\Http\Requests\Tipo_almacenRequest;
 use App\Models\Tipo_almacen;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class Tipo_almacenController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(){
+        $this->middleware('can:tipoalmacenes.index')->only('index');
+        $this->middleware('can:tipoalmacenes.create')->only('create');
+        $this->middleware('can:tipoalmacenes.store')->only('store');
+        $this->middleware('can:tipoalmacenes.destroy')->only('destroy');
+    }
+
     public function index()
     {
         $T_almacens = Tipo_almacen::all();
@@ -35,11 +40,15 @@ class Tipo_almacenController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Tipo_almacenRequest $request)
     {
         $tipoAlmacen = new Tipo_almacen();
         $tipoAlmacen->tipo = $request->input('tipo');
         $tipoAlmacen->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Tipo de Almacen','crear',$tipoAlmacen->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('tipoalmacenes.index');
     }
 
@@ -87,8 +96,9 @@ class Tipo_almacenController extends Controller
     {
         $tipoAlmacen = Tipo_almacen::findOrFail($id);
         $tipoAlmacen->delete();
-        $id_user= auth()->user();
-        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Tipo de Almacen','eliminar',$id,'2022-01-16','13:06:22',$id_user]);
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Tipo de Almacen','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('tipoalmacenes.index');
     }
 }

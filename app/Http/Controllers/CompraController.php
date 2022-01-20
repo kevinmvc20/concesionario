@@ -9,14 +9,18 @@ use App\Models\Orden_compra;
 use App\Models\Vehiculo;
 use App\Models\Proveedor;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class CompraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(){
+        $this->middleware('can:compras.index')->only('index');
+        $this->middleware('can:compras.create')->only('create');
+        $this->middleware('can:compras.store')->only('store');
+        $this->middleware('can:compras.destroy')->only('destroy');
+        $this->middleware('can:compras.show')->only('show');
+    }
+
     public function index(Request $request)
     {
         if($request){
@@ -66,6 +70,7 @@ class CompraController extends Controller
         }
         $compra->empleado_id = $conta;
         $compra->save();
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Compra','crear',$compra->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
 
         $vehiculo_id = $request->vehiculo_id;
         
@@ -80,6 +85,9 @@ class CompraController extends Controller
             $orden_compra->save();
             $cont=$cont+1;
         }
+
+        
+        
         return redirect()->route('compras.index');
     }
 
@@ -133,6 +141,10 @@ class CompraController extends Controller
     {
         $compra = Compra::findOrFail($id);
         $compra->delete();
+
+        
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Compra','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('compras.index');
     }
 }

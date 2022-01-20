@@ -4,14 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Marca;
 use Illuminate\Http\Request;
+use App\Http\Requests\MarcaRequest;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class MarcaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(){
+        $this->middleware('can:marcas.index')->only('index');
+        $this->middleware('can:marcas.create')->only('create');
+        $this->middleware('can:marcas.store')->only('store');
+        $this->middleware('can:marcas.edit')->only('edit');
+        $this->middleware('can:marcas.destroy')->only('destroy');
+        $this->middleware('can:marcas.update')->only('update');
+    }
+
+
     public function index(Request $request)
     {
         if($request){
@@ -41,12 +49,16 @@ class MarcaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MarcaRequest $request)
     {
         $marca= new Marca;
         $marca->nombre =$request->input('nombre');
         $marca->save();
-    return redirect()->route('marcas.index');
+        
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Marca','crear',$marca->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
+        return redirect()->route('marcas.index');
     }
 
     /**
@@ -79,11 +91,15 @@ class MarcaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(MarcaRequest $request, $id)
     {
         $marca = Marca::findOrFail($id);
         $marca->nombre =$request->input('nombre');
         $marca->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Marca','modificar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
     return redirect()->route('marcas.index');
     }
 
@@ -97,6 +113,9 @@ class MarcaController extends Controller
     {
         $marca = Marca::findOrFail($id);
         $marca->delete();
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Marca','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('marcas.index');
     }
 }

@@ -3,17 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Bitacora;
+use Illuminate\Support\Facades\App;
+use PDF;
 
-class EmpleadoController extends Controller
+class BitacoraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct(){
+        $this->middleware('can:bitacoras.index')->only('index');
+        $this->middleware('can:bitacoras.pdf')->only('downloadPDF');
+    }
+
+    public function index(Request $request)
     {
-        //
+        if($request){
+            $consulta = trim($request ->input('buscador'));
+            $bitacoras = Bitacora::where('nombre_usuario','LIKE','%'.$consulta.'%')
+            ->orWhere('id_user','LIKE','%'.$consulta.'%')
+            ->orderBy('id','asc')
+            ->paginate(15);
+        }
+        return view('usuario.bitacora.index',['bitacoras'=> $bitacoras,'buscador' => $consulta]);
     }
 
     /**
@@ -81,4 +91,13 @@ class EmpleadoController extends Controller
     {
         //
     }
+
+
+    public function downloadPDF(){
+        $bitacoras = Bitacora::all();
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadView('usuario.bitacora.pdf', compact('bitacoras'));
+            return $pdf->stream('invoice.pdf');
+    }
+
 }

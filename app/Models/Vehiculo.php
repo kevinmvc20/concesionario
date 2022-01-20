@@ -30,4 +30,8 @@ class Vehiculo extends Model
     public function almacen(){
         return $this->belongsTo(Almacen::class,'almacen_id');
     }
+
+    public function movimiento_almacen(){
+        return $this->hasMany(MovimientoAlmacen::class,'vehiculo_id');
+    }
 }

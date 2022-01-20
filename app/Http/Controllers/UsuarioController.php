@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Persona;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\PersonaRequest;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class UsuarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(){
+        $this->middleware('can:usuarios.index')->only('index');
+        $this->middleware('can:usuarios.create')->only('create');
+        $this->middleware('can:usuarios.store')->only('store');
+        $this->middleware('can:usuarios.destroy')->only('destroy');
+    }
 
     public static $tipo_usuario=1;
 
@@ -47,7 +51,7 @@ class UsuarioController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PersonaRequest $request)
     {
         $persona = new Persona();
         $persona->ci = $request->input('ci');
@@ -65,8 +69,9 @@ class UsuarioController extends Controller
         
         $usuario->save();
 
-        
-
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Usuario','crear',$usuario->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         
 
         return redirect()->route('usuarios.index');
@@ -118,6 +123,11 @@ class UsuarioController extends Controller
         $persona = Persona::findOrFail($usuario->id_persona);
         $usuario->delete();
         $persona->delete();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Usuario','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
+        
         return redirect()->route('usuarios.index');
     }
 }

@@ -3,19 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\ContratoRequest;
 use App\Models\Tipo_contrato;
 use App\Models\Entrega_vehiculo;
 use App\Models\Contrato;
 use App\Models\Venta;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ContratoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(){
+        $this->middleware('can:contratos.index')->only('index');
+        $this->middleware('can:contratos.create')->only('create');
+        $this->middleware('can:contratos.store')->only('store');
+        $this->middleware('can:contratos.destroy')->only('destroy');
+        $this->middleware('can:contratos.show')->only('show');
+    }
+
     public function index(Request $request)
     {
         if($request){
@@ -49,7 +54,7 @@ class ContratoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ContratoRequest $request)
     {   
         $mytime= Carbon::now('America/La_Paz');
         
@@ -67,6 +72,8 @@ class ContratoController extends Controller
         $entrega_vehiculo->contrato_id = $contrato->id;
         $entrega_vehiculo->save();
 
+        $id_user= auth()->user()->id;
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Contrato','crear',$contrato->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('contratos.index');
     } 
 
@@ -117,6 +124,10 @@ class ContratoController extends Controller
     {
         $contratos = Contrato::findOrFail($id);
         $contratos->delete();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Contrato','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('contratos.index');
     }
 }

@@ -3,18 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\VehiculoRequest;
 use App\Models\Vehiculo;
 use App\Models\Categoria;
 use App\Models\Marca;
 use App\Models\Almacen;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class VehiculoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(){
+        $this->middleware('can:vehiculos.index')->only('index');
+        $this->middleware('can:vehiculos.create')->only('create');
+        $this->middleware('can:vehiculos.store')->only('store');
+        $this->middleware('can:vehiculos.edit')->only('edit');
+        $this->middleware('can:vehiculos.destroy')->only('destroy');
+        $this->middleware('can:vehiculos.update')->only('update');
+        $this->middleware('can:vehiculos.show')->only('show');
+    }
+
     public function index(Request $request)
     {
         if($request){
@@ -46,7 +54,7 @@ class VehiculoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response    
      */
-    public function store(Request $request)
+    public function store(VehiculoRequest $request)
     {
         $vehiculo = new Vehiculo;
         $vehiculo->nombre = $request->input('nombre');
@@ -59,6 +67,10 @@ class VehiculoController extends Controller
         $vehiculo->marca_id = $request->input('marca_id');
         $vehiculo->almacen_id = $request->input('almacen_id');
         $vehiculo->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Vehiculo','crear',$vehiculo->id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('vehiculos.index');
     }
 
@@ -99,7 +111,7 @@ class VehiculoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(VehiculoRequest $request, $id)
     {
         $vehiculo = Vehiculo::findOrFail($id);
         $vehiculo->nombre = $request->input('nombre');
@@ -111,6 +123,10 @@ class VehiculoController extends Controller
         $vehiculo->marca_id = $request->input('marca_id');
         $vehiculo->almacen_id = $request->input('almacen_id');
         $vehiculo->save();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Vehiculo','modificar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('vehiculos.index');
     }
 
@@ -124,6 +140,10 @@ class VehiculoController extends Controller
     {
         $vehiculo = Vehiculo::findOrFail($id);
         $vehiculo->delete();
+
+        $id_user= auth()->user()->id;
+        $mytime= Carbon::now('America/La_Paz'); 
+        DB::statement('CALL nueva_bitacora(?,?,?,?,?,?)',['Vehiculo','eliminar',$id,$mytime->toDateTimeString(),auth()->user()->id,auth()->user()->persona->nombre]);
         return redirect()->route('vehiculos.index');
     }
 }
